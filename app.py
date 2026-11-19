@@ -260,13 +260,12 @@ with tab3:
             "sex: female = 0, male = 1. embarked: C (Cherbourg) = -1, Q (Queenstown) = 0, S (Southampton) = 1. "
             "'survived' is already 0/1, so it is not recoded, and the coded columns are not normalized."
         )
-        b1, b2 = st.columns([1, 2])
+        b1, b2 = st.columns(2)
         b1.markdown("**Before**")
         b1.dataframe(clean_df[["sex", "embarked"]].head(10), use_container_width=True)
 
         b2.markdown("**After**")
-        b2.dataframe(clean_df[["sex", "sex_code", "embarked", "embarked_code"]].head(10),
-                     use_container_width=True)
+        b2.dataframe(clean_df[["sex_code", "embarked_code"]].head(10), use_container_width=True)
 
 
 # =====================================================
