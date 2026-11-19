@@ -59,9 +59,9 @@ def prepare_data(raw):
     )
 
     # --- Coding sex and embarked as numbers (survived is NOT recoded) ---
-    df["sex_code"] = df["sex"].map({"female": 0, "male": 1})
-    df["embarked_code"] = df["embarked"].map({"C": -1, "Q": 0, "S": 1})
-    coded_cols = ["sex_code", "embarked_code"]
+    df["sex_dummy"] = df["sex"].map({"female": 0, "male": 1})
+    df["embarked_dummy"] = df["embarked"].map({"C": -1, "Q": 0, "S": 1})
+    coded_cols = ["sex_dummy", "embarked_dummy"]
 
     # Readable labels used only for charts
     df["survival_label"] = df["survived"].map({1: "Survived", 0: "Did not survive"})
@@ -265,7 +265,7 @@ with tab3:
         b1.dataframe(clean_df[["sex", "embarked"]].head(10), use_container_width=True)
 
         b2.markdown("**After**")
-        b2.dataframe(clean_df[["sex_code", "embarked_code"]].head(10), use_container_width=True)
+        b2.dataframe(clean_df[["sex_dummy", "embarked_dummy"]].head(10), use_container_width=True)
 
 
 # =====================================================
