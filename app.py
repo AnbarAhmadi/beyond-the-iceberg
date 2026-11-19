@@ -258,11 +258,18 @@ with tab3:
             "Dummy coding turns each category into its own 0/1 column so it can be used numerically. "
             "'survived' is already 0/1, so it is not dummy-coded, and dummy columns are not normalized."
         )
-        b1, b2 = st.columns([1, 2])
+        b1, b2 = st.columns([1, 3])
         b1.markdown("**Before**")
-        b1.dataframe(clean_df[["sex", "embarked"]].head(), use_container_width=True)
-        b2.markdown("**After**")
-        b2.dataframe(clean_df[dummy_cols].head(), use_container_width=True)
+        b1.dataframe(clean_df[["sex", "embarked"]].head(10), use_container_width=True)
+
+        # After: each original column next to its own dummy columns, so you can
+        # see which 0/1 column gets the 1 for each passenger
+        sex_dummies = [c for c in dummy_cols if c.startswith("sex_")]
+        emb_dummies = [c for c in dummy_cols if c.startswith("embarked_")]
+        after = clean_df[["sex"] + sex_dummies + ["embarked"] + emb_dummies].head(10)
+        highlight_ones = lambda v: f"background-color: {TEAL}; color: white" if v == 1 else ""
+        b2.markdown("**After** (1 = the passenger belongs to that category, 0 = does not)")
+        b2.dataframe(after.style.map(highlight_ones, subset=dummy_cols), use_container_width=True)
 
 
 # =====================================================
