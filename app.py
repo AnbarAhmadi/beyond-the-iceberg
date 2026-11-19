@@ -58,14 +58,15 @@ def prepare_data(raw):
         include_lowest=True,
     )
 
-    # --- Dummy coding for sex and embarked (survived is NOT dummy-coded) ---
-    dummies = pd.get_dummies(df[["sex", "embarked"]], prefix=["sex", "embarked"], dtype=int)
-    df = pd.concat([df, dummies], axis=1)
+    # --- Coding sex and embarked as numbers (survived is NOT recoded) ---
+    df["sex_code"] = df["sex"].map({"female": 0, "male": 1})
+    df["embarked_code"] = df["embarked"].map({"C": -1, "Q": 0, "S": 1})
+    coded_cols = ["sex_code", "embarked_code"]
 
     # Readable labels used only for charts
     df["survival_label"] = df["survived"].map({1: "Survived", 0: "Did not survive"})
     df["class_label"] = df["pclass"].map({1: "1st", 2: "2nd", 3: "3rd"})
-    return df, list(dummies.columns)
+    return df, coded_cols
 
 
 raw_df = load_data()
@@ -255,21 +256,17 @@ with tab3:
 
     with s4:
         st.caption(
-            "Dummy coding turns each category into its own 0/1 column so it can be used numerically. "
-            "'survived' is already 0/1, so it is not dummy-coded, and dummy columns are not normalized."
+            "Each category is replaced by a number in a single column. "
+            "sex: female = 0, male = 1. embarked: C (Cherbourg) = -1, Q (Queenstown) = 0, S (Southampton) = 1. "
+            "'survived' is already 0/1, so it is not recoded, and the coded columns are not normalized."
         )
-        b1, b2 = st.columns([1, 3])
+        b1, b2 = st.columns([1, 2])
         b1.markdown("**Before**")
         b1.dataframe(clean_df[["sex", "embarked"]].head(10), use_container_width=True)
 
-        # After: each original column next to its own dummy columns, so you can
-        # see which 0/1 column gets the 1 for each passenger
-        sex_dummies = [c for c in dummy_cols if c.startswith("sex_")]
-        emb_dummies = [c for c in dummy_cols if c.startswith("embarked_")]
-        after = clean_df[["sex"] + sex_dummies + ["embarked"] + emb_dummies].head(10)
-        highlight_ones = lambda v: f"background-color: {TEAL}; color: white" if v == 1 else ""
-        b2.markdown("**After** (1 = the passenger belongs to that category, 0 = does not)")
-        b2.dataframe(after.style.map(highlight_ones, subset=dummy_cols), use_container_width=True)
+        b2.markdown("**After**")
+        b2.dataframe(clean_df[["sex", "sex_code", "embarked", "embarked_code"]].head(10),
+                     use_container_width=True)
 
 
 # =====================================================
